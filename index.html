@@ -14,6 +14,9 @@
         }
         #qrcode {
             margin-top: 20px;
+            background: white;        /* quiet zone background */
+            padding: 16px;            /* quiet zone size */
+            display: inline-block;
         }
     </style>
 </head>
@@ -43,7 +46,8 @@
             new QRCode(qrDiv, {
                 text: text,
                 width: 200,
-                height: 200
+                height: 200,
+                correctLevel: QRCode.CorrectLevel.H  // high error correction
             });
         }
 
@@ -52,15 +56,17 @@
             const canvas = qrDiv.querySelector("canvas");
             const img = qrDiv.querySelector("img");
 
+            if (!canvas && !img) {
+                alert("Generate QR first");
+                return;
+            }
+
             let dataUrl;
 
             if (canvas) {
                 dataUrl = canvas.toDataURL("image/png");
-            } else if (img) {
-                dataUrl = img.src;
             } else {
-                alert("Generate QR first");
-                return;
+                dataUrl = img.src;
             }
 
             const a = document.createElement("a");
