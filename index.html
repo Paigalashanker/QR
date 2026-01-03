@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>QR Generator</title>
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 40px;
         }
         input, button {
             padding: 10px;
             margin: 10px;
+            font-size: 16px;
         }
         #qrcode {
             margin-top: 20px;
-            background: white;        /* quiet zone background */
-            padding: 16px;            /* quiet zone size */
+            background: white;      /* quiet zone */
+            padding: 16px;
             display: inline-block;
         }
     </style>
@@ -31,10 +33,14 @@
 
     <div id="qrcode"></div>
 
+    <!-- QRCode Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
     <script>
+        let qrInstance = null;
+
         function generateQR() {
-            const text = document.getElementById("text").value;
+            const text = document.getElementById("text").value.trim();
             if (!text) {
                 alert("Enter text first");
                 return;
@@ -43,36 +49,30 @@
             const qrDiv = document.getElementById("qrcode");
             qrDiv.innerHTML = "";
 
-            new QRCode(qrDiv, {
+            qrInstance = new QRCode(qrDiv, {
                 text: text,
                 width: 200,
                 height: 200,
-                correctLevel: QRCode.CorrectLevel.H  // high error correction
+                useSVG: false,                 // force canvas
+                correctLevel: QRCode.CorrectLevel.H
             });
         }
 
         function downloadQR() {
-            const qrDiv = document.getElementById("qrcode");
-            const canvas = qrDiv.querySelector("canvas");
-            const img = qrDiv.querySelector("img");
+            const canvas = document.querySelector("#qrcode canvas");
 
-            if (!canvas && !img) {
+            if (!canvas) {
                 alert("Generate QR first");
                 return;
             }
 
-            let dataUrl;
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = "qr-code.png";
 
-            if (canvas) {
-                dataUrl = canvas.toDataURL("image/png");
-            } else {
-                dataUrl = img.src;
-            }
-
-            const a = document.createElement("a");
-            a.href = dataUrl;
-            a.download = "qr-code.png";
-            a.click();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 
