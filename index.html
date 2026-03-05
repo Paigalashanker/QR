@@ -22,14 +22,17 @@ padding:10px;
 width:280px;
 }
 
-select{
-padding:10px;
-}
+
 
 button{
 padding:10px 20px;
 margin:5px;
 cursor:pointer;
+}
+
+#downloadBtn{
+display:none;
+margin-top:12px;
 }
 
 #qrcode{
@@ -51,19 +54,14 @@ box-shadow:0 0 10px rgba(0,0,0,0.1);
 
 <input type="text" id="text" placeholder="Enter text or website">
 
-<select id="size">
-<option value="150">Small</option>
-<option value="200" selected>Medium</option>
-<option value="300">Large</option>
-</select>
-
 <br><br>
 
 <button onclick="generateQR()">Generate</button>
-<button onclick="downloadQR()">Download</button>
 <button onclick="clearQR()">Clear</button>
 
 <div id="qrcode"></div>
+<br>
+<button id="downloadBtn" onclick="downloadQR()">Download</button>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
@@ -82,7 +80,7 @@ if(!text.startsWith("http") && text.includes(".")){
 text="https://"+text;
 }
 
-let size=document.getElementById("size").value;
+let size=200;
 
 document.getElementById("qrcode").innerHTML="";
 
@@ -92,21 +90,47 @@ width:Number(size),
 height:Number(size)
 });
 
+document.getElementById("downloadBtn").style.display="inline-block";
+
 }
 
 function downloadQR(){
 
 let img=document.querySelector("#qrcode img");
+let canvas=document.querySelector("#qrcode canvas");
 
-if(!img){
+if(!img && !canvas){
 alert("Generate QR first");
 return;
 }
 
+// Draw QR onto a new canvas with white background
+let tempCanvas=document.createElement("canvas");
+let src=img||canvas;
+let padding=20;
+tempCanvas.width=src.width+padding*2;
+tempCanvas.height=src.height+padding*2;
+let ctx=tempCanvas.getContext("2d");
+ctx.fillStyle="#ffffff";
+ctx.fillRect(0,0,tempCanvas.width,tempCanvas.height);
+
+if(img){
+let image=new Image();
+image.onload=function(){
+ctx.drawImage(image,padding,padding);
 let link=document.createElement("a");
-link.href=img.src;
+link.href=tempCanvas.toDataURL("image/png");
 link.download="qr-code.png";
 link.click();
+};
+image.src=img.src;
+}else{
+ctx.drawImage(canvas,padding,padding);
+let link=document.createElement("a");
+link.href=tempCanvas.toDataURL("image/png");
+link.download="qr-code.png";
+link.click();
+}
 
 }
 
@@ -114,6 +138,7 @@ function clearQR(){
 
 document.getElementById("qrcode").innerHTML="";
 document.getElementById("text").value="";
+document.getElementById("downloadBtn").style.display="none";
 
 }
 
