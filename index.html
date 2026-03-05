@@ -1,80 +1,124 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>QR Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 40px;
-        }
-        input, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        #qrcode {
-            margin-top: 20px;
-            background: white;      /* quiet zone */
-            padding: 16px;
-            display: inline-block;
-        }
-    </style>
+<title>QR Code Generator</title>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+margin-top:50px;
+background:#f4f4f4;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+input{
+padding:10px;
+width:280px;
+}
+
+select{
+padding:10px;
+}
+
+button{
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
+}
+
+#qrcode{
+margin-top:25px;
+background:white;
+padding:20px;
+display:inline-block;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <h2>QR Code Generator 🔳</h2>
+<h2>QR Code Generator 🔳</h2>
 
-    <input type="text" id="text" placeholder="Enter text">
-    <br>
-    <button onclick="generateQR()">Generate</button>
-    <button onclick="downloadQR()">Download QR</button>
+<input type="text" id="text" placeholder="Enter text or website">
 
-    <div id="qrcode"></div>
+<select id="size">
+<option value="150">Small</option>
+<option value="200" selected>Medium</option>
+<option value="300">Large</option>
+</select>
 
-    <!-- QRCode Library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<br><br>
 
-    <script>
-        let qrInstance = null;
+<button onclick="generateQR()">Generate</button>
+<button onclick="downloadQR()">Download</button>
+<button onclick="clearQR()">Clear</button>
 
-        function generateQR() {
-            const text = document.getElementById("text").value.trim();
-            if (!text) {
-                alert("Enter text first");
-                return;
-            }
+<div id="qrcode"></div>
 
-            const qrDiv = document.getElementById("qrcode");
-            qrDiv.innerHTML = "";
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 
-            qrInstance = new QRCode(qrDiv, {
-                text: text,
-                width: 200,
-                height: 200,
-                useSVG: false,                 // force canvas
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
+<script>
 
-        function downloadQR() {
-            const canvas = document.querySelector("#qrcode canvas");
+function generateQR(){
 
-            if (!canvas) {
-                alert("Generate QR first");
-                return;
-            }
+let text=document.getElementById("text").value.trim();
 
-            const link = document.createElement("a");
-            link.href = canvas.toDataURL("image/png");
-            link.download = "qr-code.png";
+if(!text){
+alert("Please enter text or link");
+return;
+}
 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
+if(!text.startsWith("http") && text.includes(".")){
+text="https://"+text;
+}
+
+let size=document.getElementById("size").value;
+
+document.getElementById("qrcode").innerHTML="";
+
+new QRCode(document.getElementById("qrcode"),{
+text:text,
+width:Number(size),
+height:Number(size)
+});
+
+}
+
+function downloadQR(){
+
+let img=document.querySelector("#qrcode img");
+
+if(!img){
+alert("Generate QR first");
+return;
+}
+
+let link=document.createElement("a");
+link.href=img.src;
+link.download="qr-code.png";
+link.click();
+
+}
+
+function clearQR(){
+
+document.getElementById("qrcode").innerHTML="";
+document.getElementById("text").value="";
+
+}
+
+</script>
 
 </body>
 </html>
+```
