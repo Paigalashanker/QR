@@ -60,6 +60,8 @@ box-shadow:0 0 10px rgba(0,0,0,0.1);
 
 <div id="qrcode"></div>
 <br>
+<input type="text" id="filename" placeholder="Enter file name" style="display:none;margin-bottom:8px;">
+<br>
 <button id="downloadBtn" onclick="downloadQR()">Download</button>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
@@ -90,10 +92,19 @@ height:Number(size)
 });
 
 document.getElementById("downloadBtn").style.display="inline-block";
+document.getElementById("filename").style.display="inline-block";
 
 }
 
 function downloadQR(){
+
+let fileName=document.getElementById("filename").value.trim();
+if(!fileName){
+alert("Please enter a file name");
+document.getElementById("filename").focus();
+return;
+}
+if(!fileName.endsWith(".png")) fileName+=".png";
 
 let img=document.querySelector("#qrcode img");
 let canvas=document.querySelector("#qrcode canvas");
@@ -119,7 +130,7 @@ image.onload=function(){
 ctx.drawImage(image,padding,padding);
 let link=document.createElement("a");
 link.href=tempCanvas.toDataURL("image/png");
-link.download="qr-code.png";
+link.download=fileName;
 link.click();
 };
 image.src=img.src;
@@ -127,7 +138,7 @@ image.src=img.src;
 ctx.drawImage(canvas,padding,padding);
 let link=document.createElement("a");
 link.href=tempCanvas.toDataURL("image/png");
-link.download="qr-code.png";
+link.download=fileName;
 link.click();
 }
 
@@ -138,6 +149,8 @@ function clearQR(){
 document.getElementById("qrcode").innerHTML="";
 document.getElementById("text").value="";
 document.getElementById("downloadBtn").style.display="none";
+document.getElementById("filename").style.display="none";
+document.getElementById("filename").value="";
 
 }
 
