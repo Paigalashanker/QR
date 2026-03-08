@@ -44,9 +44,7 @@ Instead of reimplementing this complex logic, a trusted open-source library is u
 
 🔹 Live Demo
 
-👉 (Add your GitHub Pages link here)
-
-https://your-username.github.io/qr-generator/
+👉 https://paigalashanker.github.io/QR/
 
 🔹 Usage
 
